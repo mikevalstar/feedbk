@@ -1,9 +1,9 @@
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
-import { migrate } from "drizzle-orm/libsql/migrator";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import { migrate } from "drizzle-orm/libsql/migrator";
 
 // Resolve paths relative to the package root so this works from src/ (tsx) and dist/ alike.
 const packageDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");

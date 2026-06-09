@@ -1,6 +1,6 @@
+import designFeedback from "@repo/vite-plugin-design-feedback";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import designFeedback from "@repo/vite-plugin-design-feedback";
 
 export default defineConfig({
   plugins: [

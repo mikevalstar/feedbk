@@ -1,5 +1,5 @@
-import { useLibrary } from "../library";
 import type { Book } from "../data";
+import { useLibrary } from "../library";
 
 const STATUS_LABELS = {
   available: "Available",
@@ -25,11 +25,14 @@ export function BookCard({ book }: { book: Book }) {
         </p>
         <p className="book-genre">{book.genre}</p>
         {book.dueDate && (
-          <p className={book.status === "overdue" ? "book-due book-due--overdue" : "book-due"}>
-            Due {book.dueDate}
-          </p>
+          <p className={book.status === "overdue" ? "book-due book-due--overdue" : "book-due"}>Due {book.dueDate}</p>
         )}
-        <button type="button" className="btn btn-primary book-action" disabled={!canCheckOut} onClick={() => addToCart(book)}>
+        <button
+          type="button"
+          className="btn btn-primary book-action"
+          disabled={!canCheckOut}
+          onClick={() => addToCart(book)}
+        >
           {inCart ? "In checkout" : book.status === "available" ? "Check out" : "Unavailable"}
         </button>
       </div>

@@ -24,22 +24,41 @@ export function IdentityModal({ initial, onSave, onCancel }: Props) {
   };
 
   return (
-    <div className="dfb-overlay" onMouseDown={(e) => e.target === e.currentTarget && onCancel()}>
+    // biome-ignore lint/a11y/noStaticElementInteractions: backdrop click-to-close; Cancel button is the accessible path
+    <div className="dfb-overlay" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && onCancel()}>
       <form className="dfb-modal" onSubmit={submit}>
         <h2>Who's reviewing?</h2>
-        <p className="dfb-modal-sub">Your name and email are attached to the feedback you leave. Stored locally in this browser.</p>
+        <p className="dfb-modal-sub">
+          Your name and email are attached to the feedback you leave. Stored locally in this browser.
+        </p>
         <div className="dfb-field">
           <label htmlFor="dfb-id-name">Name</label>
-          <input id="dfb-id-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ada Lovelace" autoFocus />
+          <input
+            id="dfb-id-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Ada Lovelace"
+            autoFocus
+          />
         </div>
         <div className="dfb-field">
           <label htmlFor="dfb-id-email">Email</label>
-          <input id="dfb-id-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ada@example.com" />
+          <input
+            id="dfb-id-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="ada@example.com"
+          />
         </div>
         {error && <div className="dfb-error">{error}</div>}
         <div className="dfb-modal-actions">
-          <button type="button" className="dfb-btn" onClick={onCancel}>Cancel</button>
-          <button type="submit" className="dfb-btn dfb-btn--primary">Save</button>
+          <button type="button" className="dfb-btn" onClick={onCancel}>
+            Cancel
+          </button>
+          <button type="submit" className="dfb-btn dfb-btn--primary">
+            Save
+          </button>
         </div>
       </form>
     </div>

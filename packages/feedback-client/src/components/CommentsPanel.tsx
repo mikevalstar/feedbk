@@ -30,7 +30,9 @@ export function CommentsPanel(props: Props) {
     <div className="dfb-panel">
       <div className="dfb-panel-header">
         <h2>Comments on {props.pagePath}</h2>
-        <button type="button" className="dfb-btn" onClick={props.onClose}>Close</button>
+        <button type="button" className="dfb-btn" onClick={props.onClose}>
+          Close
+        </button>
       </div>
       <div className="dfb-panel-sub">
         <span>{comments.length} shown</span>
@@ -43,7 +45,11 @@ export function CommentsPanel(props: Props) {
           Show resolved
         </label>
         <label>
-          <input type="checkbox" checked={props.showMarkers} onChange={(e) => props.onToggleMarkers(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={props.showMarkers}
+            onChange={(e) => props.onToggleMarkers(e.target.checked)}
+          />
           Markers
         </label>
       </div>
@@ -155,7 +161,12 @@ function CommentCard({ comment, missing, ...props }: Props & { comment: Comment;
       <div className="dfb-comment-actions">
         {editing ? (
           <>
-            <button type="button" className="dfb-btn dfb-btn--primary" onClick={saveEdit} disabled={busy || !editBody.trim()}>
+            <button
+              type="button"
+              className="dfb-btn dfb-btn--primary"
+              onClick={saveEdit}
+              disabled={busy || !editBody.trim()}
+            >
               {busy ? "Saving…" : "Save"}
             </button>
             <button

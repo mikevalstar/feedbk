@@ -33,7 +33,8 @@ export function CommentForm({ draft, identity, onSubmit, onCancel }: Props) {
   };
 
   return (
-    <div className="dfb-overlay" onMouseDown={(e) => e.target === e.currentTarget && onCancel()}>
+    // biome-ignore lint/a11y/noStaticElementInteractions: backdrop click-to-close; Cancel button is the accessible path
+    <div className="dfb-overlay" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && onCancel()}>
       <form className="dfb-modal" onSubmit={submit}>
         <h2>{TITLES[draft.type]}</h2>
         <p className="dfb-modal-sub">
@@ -60,9 +61,7 @@ export function CommentForm({ draft, identity, onSubmit, onCancel }: Props) {
             {draft.coords.normalizedX.toFixed(3)}, {draft.coords.normalizedY.toFixed(3)})
           </div>
         )}
-        {draft.type === "page-general" && (
-          <div className="dfb-context">This comment applies to the whole page.</div>
-        )}
+        {draft.type === "page-general" && <div className="dfb-context">This comment applies to the whole page.</div>}
 
         <div className="dfb-field">
           <label htmlFor="dfb-comment-body">Feedback</label>
@@ -76,7 +75,9 @@ export function CommentForm({ draft, identity, onSubmit, onCancel }: Props) {
         </div>
         {error && <div className="dfb-error">{error}</div>}
         <div className="dfb-modal-actions">
-          <button type="button" className="dfb-btn" onClick={onCancel}>Cancel</button>
+          <button type="button" className="dfb-btn" onClick={onCancel}>
+            Cancel
+          </button>
           <button type="submit" className="dfb-btn dfb-btn--primary" disabled={!body.trim() || saving}>
             {saving ? "Saving…" : "Add comment"}
           </button>

@@ -27,6 +27,8 @@ pnpm install
 pnpm dev          # build packages once, then backend + sample app + package watchers in parallel
 pnpm build        # build everything
 pnpm typecheck    # tsc across the workspace
+pnpm lint         # biome check (format + lint), config in biome.json
+pnpm lint:fix     # biome check --write
 pnpm db:generate  # drizzle-kit generate (after schema changes) — run in apps/backend via filter
 pnpm db:migrate   # drizzle-kit migrate
 ```
@@ -77,6 +79,7 @@ Rules: never hide a comment because its anchor is gone; never store DOM position
 ## Conventions
 
 - TypeScript strict everywhere; ESM everywhere (`"type": "module"`).
+- Formatting and linting via Biome (`biome.json` at the root: 120-col, double quotes, organized imports). Run `pnpm lint:fix` before committing; `noAutofocus` is off (modal UX is intentional) and backdrop click-to-close divs carry local `biome-ignore` comments.
 - Workspace packages are `@repo/*` and linked with `workspace:*`.
 - The feedback client's DOM uses `dfb-`-prefixed class names and lives under a root with `data-feedback-ui`; the picker ignores anything inside `[data-feedback-ui]`. Keep it that way so the tool can't comment on itself.
 - Comment ids are `cmt_`-prefixed, generated server-side.

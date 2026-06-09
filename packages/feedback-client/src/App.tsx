@@ -153,6 +153,7 @@ export function App({ config }: { config: FeedbackConfig }) {
   }, [mode, showToast]);
 
   // --- derived state ---
+  // biome-ignore lint/correctness/useExhaustiveDependencies(tick): tick forces re-evaluation as the DOM changes
   const foundById = useMemo(() => {
     const map = new Map<string, boolean>();
     for (const comment of comments) {
@@ -161,7 +162,6 @@ export function App({ config }: { config: FeedbackConfig }) {
       }
     }
     return map;
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- tick forces re-evaluation as the DOM changes
   }, [comments, tick]);
 
   const visibleComments = useMemo(
@@ -171,7 +171,9 @@ export function App({ config }: { config: FeedbackConfig }) {
 
   const numbers = useMemo(() => {
     const map = new Map<string, number>();
-    visibleComments.forEach((comment, index) => map.set(comment.id, index + 1));
+    visibleComments.forEach((comment, index) => {
+      map.set(comment.id, index + 1);
+    });
     return map;
   }, [visibleComments]);
 
@@ -373,7 +375,12 @@ export function App({ config }: { config: FeedbackConfig }) {
       {mode === "pick-component" && hover && (
         <div
           className="dfb-highlight"
-          style={{ left: hover.rect.left - 2, top: hover.rect.top - 2, width: hover.rect.width + 4, height: hover.rect.height + 4 }}
+          style={{
+            left: hover.rect.left - 2,
+            top: hover.rect.top - 2,
+            width: hover.rect.width + 4,
+            height: hover.rect.height + 4,
+          }}
         >
           <div className="dfb-highlight-label">{hover.label}</div>
         </div>
@@ -436,7 +443,12 @@ export function App({ config }: { config: FeedbackConfig }) {
         <CommentForm draft={draft} identity={identity} onSubmit={submitComment} onCancel={() => setDraft(null)} />
       )}
       {manualCopyText !== null && (
-        <div className="dfb-overlay" onMouseDown={(e) => e.target === e.currentTarget && setManualCopyText(null)}>
+        // biome-ignore lint/a11y/noStaticElementInteractions: backdrop click-to-close; Done button is the accessible path
+        <div
+          className="dfb-overlay"
+          role="presentation"
+          onMouseDown={(e) => e.target === e.currentTarget && setManualCopyText(null)}
+        >
           <div className="dfb-modal">
             <h2>Copy feedback manually</h2>
             <p className="dfb-modal-sub">Clipboard access failed — select the text below and copy it.</p>
@@ -463,7 +475,15 @@ export function App({ config }: { config: FeedbackConfig }) {
 
 function PencilIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
       <path d="m15 5 4 4" />
     </svg>

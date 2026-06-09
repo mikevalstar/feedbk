@@ -66,6 +66,7 @@ Other root scripts:
 ```bash
 pnpm build       # build all packages and apps
 pnpm typecheck   # TypeScript checks across the workspace
+pnpm lint        # Biome (format + lint); pnpm lint:fix to auto-fix
 ```
 
 ## Plugin configuration

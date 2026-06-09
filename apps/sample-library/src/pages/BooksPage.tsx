@@ -36,7 +36,9 @@ export function BooksPage() {
       {showOverdue && <OverdueNotices />}
 
       {filtered.length === 0 ? (
-        <p className="muted empty-results">No books match “{query}” in {genre}.</p>
+        <p className="muted empty-results">
+          No books match “{query}” in {genre}.
+        </p>
       ) : (
         <div className="book-grid">
           {filtered.map((book) => (

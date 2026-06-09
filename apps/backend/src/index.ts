@@ -1,8 +1,8 @@
+import { randomUUID } from "node:crypto";
 import { serve } from "@hono/node-server";
 import { and, asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { randomUUID } from "node:crypto";
 import { db, runMigrations } from "./db.js";
 import { comments, type NewCommentRow } from "./schema.js";
 import { createCommentSchema, updateCommentSchema } from "./validation.js";

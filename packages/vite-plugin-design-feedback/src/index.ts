@@ -1,6 +1,6 @@
-import { transform as esbuildTransform } from "esbuild";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { transform as esbuildTransform } from "esbuild";
 import type { HtmlTagDescriptor, Plugin, PluginOption } from "vite";
 import componentTagger from "vite-plugin-component-tagger";
 
