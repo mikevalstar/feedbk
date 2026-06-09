@@ -129,7 +129,7 @@ Comments are never hidden just because their component disappeared; missing-comp
 
 ## How page comments work
 
-- **Page-position comments**: click the pencil → "Add page-position comment" → click anywhere on the page. Coordinates are captured exactly like component comments, but no component metadata is stored.
+- **Page-position comments**: click the pencil → "Add page-position comment" → click anywhere on the page. Coordinates are captured exactly like component comments; if the click landed inside a tagged component, it's recorded as a "nearest component" hint for the AI export, but the comment stays position-anchored.
 - **General page comments**: click the pencil → "Add general page comment" → the form opens immediately. No component, no coordinates — the comment attaches to the page as a whole.
 
 ## How the AI-agent feedback export works

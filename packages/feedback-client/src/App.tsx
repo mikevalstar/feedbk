@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { describeComponent, findComponentElement, findTaggedAncestor, isInsideFeedbackUi } from "./anchoring";
+import {
+  describeComponent,
+  findComponentElement,
+  findNearestComponentForHint,
+  findTaggedAncestor,
+  isInsideFeedbackUi,
+} from "./anchoring";
 import * as api from "./api";
 import { CommentForm } from "./components/CommentForm";
 import { CommentsPanel } from "./components/CommentsPanel";
@@ -134,7 +140,14 @@ export function App({ config }: { config: FeedbackConfig }) {
         }
         setDraft({ type: "component", coords: captureCoords(event), component: describeComponent(el) });
       } else {
-        setDraft({ type: "page-position", coords: captureCoords(event), component: null });
+        // Best-effort guess: if the click landed inside a tagged component,
+        // record it as a hint (the comment stays position-anchored).
+        const nearest = findNearestComponentForHint(target);
+        setDraft({
+          type: "page-position",
+          coords: captureCoords(event),
+          component: nearest ? describeComponent(nearest) : null,
+        });
       }
       setMode("idle");
     };

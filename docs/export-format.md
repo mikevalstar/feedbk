@@ -17,7 +17,7 @@ Found/missing is evaluated live at export time using the same anchoring logic as
 
 ## Per-comment fields
 
-Every comment block includes: comment id (heading), status, author `Name <email>`, created timestamp (plus updated timestamp when it differs), and the feedback body. Component comments add component name, component tag (`data-ref` value) and found/missing status; positioned comments add client and normalized coordinates. Missing-component comments add an explicit note that the component was absent at export time.
+Every comment block includes: comment id (heading), status, author `Name <email>`, created timestamp (plus updated timestamp when it differs), and the feedback body. Component comments add component name, component tag (`data-ref` value) and found/missing status; positioned comments add client and normalized coordinates. Page-position comments that landed inside a tagged component also include a `Nearest Component:` line (a best-effort guess captured at click time — the comment remains position-anchored). Missing-component comments add an explicit note that the component was absent at export time.
 
 ## Example
 
@@ -56,6 +56,8 @@ The page feels too busy. Reduce visual noise.
 Status: open
 Author: Jane <jane@example.com>
 Created: 2026-06-09T15:21:00.000Z
+Nearest Component: SearchBar
+Component Tag: src/components/SearchBar.tsx#L9-11
 Position:
 - clientX/clientY: 420, 260
 - normalizedX/normalizedY: 0.328, 0.241

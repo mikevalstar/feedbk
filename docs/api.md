@@ -24,7 +24,8 @@ type Comment = {
   authorEmail: string;
   status: CommentStatus;      // default "open"
 
-  // Component metadata (component comments only; null otherwise)
+  // Component metadata (component comments; page-position comments may carry
+  // them too as a "nearest component" hint; null otherwise)
   componentName: string | null;     // e.g. "BookCard"
   componentTag: string | null;      // data-ref value, e.g. "src/components/BookCard.tsx#L12-14"
   componentMetadata: string | null; // JSON text for anything extra

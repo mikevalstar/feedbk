@@ -34,7 +34,7 @@ Press `Esc` at any time to leave a pick mode.
 ## Comment types
 
 - **Component comment** — anchored to a component tagged by `vite-plugin-component-tagger` (anything carrying a `data-ref` attribute). Stores component metadata *and* coordinates as a fallback.
-- **Page-position comment** — anchored to a clicked point on the page. Stores coordinates only.
+- **Page-position comment** — anchored to a clicked point on the page. Stores coordinates; if the click landed inside a tagged component, that component is also recorded as a "nearest component" hint (shown in the panel and the AI export, but the comment stays position-anchored).
 - **General page comment** — anchored to the page itself. No component, no coordinates.
 
 All comments store: project key, page path (`location.pathname`), full URL, body, author name/email, status (`open`/`resolved`), and created/updated timestamps.

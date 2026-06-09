@@ -78,6 +78,13 @@ function commentBlock(comment: Comment, found: boolean | null): string[] {
     lines.push(`Component Found: ${found ? "yes" : "no"}`);
   }
 
+  if (comment.type === "page-position" && comment.componentName) {
+    // Best-effort guess captured at click time — the comment is anchored to
+    // the position, but this tells the agent which component it landed on.
+    lines.push(`Nearest Component: ${comment.componentName}`);
+    if (comment.componentTag) lines.push(`Component Tag: ${comment.componentTag}`);
+  }
+
   if (comment.clientX != null && comment.clientY != null) {
     lines.push("Position:", `- clientX/clientY: ${comment.clientX}, ${comment.clientY}`);
     if (comment.normalizedX != null && comment.normalizedY != null) {

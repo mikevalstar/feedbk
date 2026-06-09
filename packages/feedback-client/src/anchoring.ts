@@ -57,6 +57,22 @@ export function findTaggedAncestor(el: Element | null): Element | null {
   return el.closest("[data-ref]");
 }
 
+/**
+ * Nearest tagged component for a page-position comment's "nearest component"
+ * hint. Unlike findTaggedAncestor this rejects page-sized wrappers (app
+ * shells, page roots): "near App" tells the AI agent nothing, so the hint is
+ * only kept when the component meaningfully narrows down the location.
+ */
+export function findNearestComponentForHint(el: Element | null): Element | null {
+  const tagged = findTaggedAncestor(el);
+  if (!tagged) return null;
+  const rect = tagged.getBoundingClientRect();
+  const viewportArea = window.innerWidth * window.innerHeight;
+  if (viewportArea <= 0) return null;
+  const coverage = (rect.width * rect.height) / viewportArea;
+  return coverage <= 0.5 ? tagged : null;
+}
+
 export function buildDomPath(el: Element): string {
   const parts: string[] = [];
   let current: Element | null = el;

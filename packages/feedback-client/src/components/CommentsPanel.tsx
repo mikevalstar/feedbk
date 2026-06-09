@@ -148,6 +148,12 @@ function CommentCard({ comment, missing, ...props }: Props & { comment: Comment;
       {comment.type === "page-position" && comment.clientX != null && comment.clientY != null && (
         <div className="dfb-comment-target">
           Position: {Math.round(comment.clientX)}, {Math.round(comment.clientY)}
+          {comment.componentName && (
+            <>
+              {" · near "}
+              <code>{comment.componentName}</code>
+            </>
+          )}
         </div>
       )}
 

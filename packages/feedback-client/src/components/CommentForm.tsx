@@ -59,6 +59,12 @@ export function CommentForm({ draft, identity, onSubmit, onCancel }: Props) {
           <div className="dfb-context">
             Position: {Math.round(draft.coords.clientX)}, {Math.round(draft.coords.clientY)} (normalized{" "}
             {draft.coords.normalizedX.toFixed(3)}, {draft.coords.normalizedY.toFixed(3)})
+            {draft.component && (
+              <>
+                <br />
+                Near component: <strong>{draft.component.componentName}</strong>
+              </>
+            )}
           </div>
         )}
         {draft.type === "page-general" && <div className="dfb-context">This comment applies to the whole page.</div>}
