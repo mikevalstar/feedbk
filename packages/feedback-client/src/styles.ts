@@ -22,6 +22,9 @@ export const css = `
   transition: transform 120ms ease, background 120ms ease;
 }
 .dfb-fab:hover { transform: scale(1.06); background: #4338ca; }
+/* keep the pencil reachable while the panel is open */
+.dfb-fab--shifted { right: 410px; }
+.dfb-menu--shifted { right: 410px; }
 .dfb-fab svg { width: 22px; height: 22px; }
 .dfb-fab-badge {
   position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px;

@@ -285,7 +285,7 @@ export function App({ config }: { config: FeedbackConfig }) {
       {/* floating pencil button */}
       <button
         type="button"
-        className="dfb-fab"
+        className={panelOpen ? "dfb-fab dfb-fab--shifted" : "dfb-fab"}
         title="Design feedback"
         onClick={() => requireIdentity(() => setMenuOpen((open) => !open))}
       >
@@ -294,7 +294,7 @@ export function App({ config }: { config: FeedbackConfig }) {
       </button>
 
       {menuOpen && (
-        <div className="dfb-menu">
+        <div className={panelOpen ? "dfb-menu dfb-menu--shifted" : "dfb-menu"}>
           <div className="dfb-menu-header">Add feedback</div>
           <button type="button" className="dfb-menu-item" onClick={() => startMode("pick-component")}>
             <span className="dfb-mi-icon">▣</span> Add component comment
