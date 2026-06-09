@@ -24,6 +24,7 @@ export function CommentsPanel(props: Props) {
   const { comments, foundById } = props;
   const general = comments.filter((c) => c.type === "page-general");
   const positioned = comments.filter((c) => c.type === "page-position");
+  const copyComments = comments.filter((c) => c.type === "copy");
   const componentFound = comments.filter((c) => c.type === "component" && foundById.get(c.id));
   const componentMissing = comments.filter((c) => c.type === "component" && !foundById.get(c.id));
 
@@ -58,6 +59,7 @@ export function CommentsPanel(props: Props) {
         {comments.length === 0 && <div className="dfb-empty">No comments on this page yet.</div>}
         <Group title="General page comments" items={general} {...props} />
         <Group title="Page-position comments" items={positioned} {...props} />
+        <Group title="Copy comments" items={copyComments} {...props} />
         <Group title="Component comments" items={componentFound} {...props} />
         <Group title="Component comments — component missing" items={componentMissing} missing {...props} />
       </div>
@@ -114,7 +116,11 @@ function CommentCard({ comment, missing, ...props }: Props & { comment: Comment;
       ? "dfb-comment-num dfb-comment-num--page-position"
       : comment.type === "page-general"
         ? "dfb-comment-num dfb-comment-num--page-general"
-        : "dfb-comment-num";
+        : comment.type === "copy"
+          ? "dfb-comment-num dfb-comment-num--copy"
+          : "dfb-comment-num";
+
+  const copyTextFound = comment.type === "copy" ? (props.foundById.get(comment.id) ?? false) : true;
 
   return (
     <div
@@ -144,6 +150,22 @@ function CommentCard({ comment, missing, ...props }: Props & { comment: Comment;
         <div className="dfb-missing">
           Component not currently found on this page. Originally attached to: {comment.componentName ?? "unknown"}.
         </div>
+      )}
+      {comment.type === "copy" && comment.textSnippet && (
+        <div className="dfb-comment-target">
+          <blockquote className="dfb-quote">
+            {comment.textSnippet.slice(0, 160)}
+            {comment.textSnippet.length > 160 ? "…" : ""}
+          </blockquote>
+          {comment.componentName && (
+            <>
+              near <code>{comment.componentName}</code>
+            </>
+          )}
+        </div>
+      )}
+      {comment.type === "copy" && !copyTextFound && (
+        <div className="dfb-missing">Selected text not currently found on this page.</div>
       )}
       {comment.type === "page-position" && comment.clientX != null && comment.clientY != null && (
         <div className="dfb-comment-target">

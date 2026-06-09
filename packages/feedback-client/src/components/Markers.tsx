@@ -1,4 +1,4 @@
-import { findComponentElement } from "../anchoring";
+import { findComponentElement, findTextRect } from "../anchoring";
 import type { Comment } from "../types";
 
 type Props = {
@@ -40,11 +40,25 @@ function positionFor(comment: Comment, found: boolean): MarkerPosition | null {
     }
   }
 
+  if (comment.type === "copy" && found) {
+    const rect = findTextRect(comment.textSnippet);
+    if (rect) {
+      if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+        return null;
+      }
+      return {
+        x: Math.min(Math.max(rect.right + 4, 16), window.innerWidth - 16),
+        y: Math.min(Math.max(rect.top + rect.height / 2, 16), window.innerHeight - 16),
+        fallback: false,
+      };
+    }
+  }
+
   if (comment.normalizedX != null && comment.normalizedY != null) {
     return {
       x: Math.min(Math.max(comment.normalizedX * window.innerWidth, 16), window.innerWidth - 16),
       y: Math.min(Math.max(comment.normalizedY * window.innerHeight, 16), window.innerHeight - 16),
-      fallback: comment.type === "component",
+      fallback: comment.type === "component" || comment.type === "copy",
     };
   }
   return null;
@@ -61,6 +75,7 @@ export function Markers({ comments, numbers, foundById, tick, onMarkerClick }: P
         const classes = [
           "dfb-marker",
           comment.type === "page-position" ? "dfb-marker--page-position" : "",
+          comment.type === "copy" ? "dfb-marker--copy" : "",
           position.fallback ? "dfb-marker--fallback" : "",
           comment.status === "resolved" ? "dfb-marker--resolved" : "",
         ]

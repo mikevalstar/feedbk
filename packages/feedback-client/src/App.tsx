@@ -4,6 +4,7 @@ import {
   findComponentElement,
   findNearestComponentForHint,
   findTaggedAncestor,
+  findTextRect,
   isInsideFeedbackUi,
 } from "./anchoring";
 import * as api from "./api";
@@ -12,11 +13,11 @@ import { CommentsPanel } from "./components/CommentsPanel";
 import { IdentityModal } from "./components/IdentityModal";
 import { Markers } from "./components/Markers";
 import { PagesModal } from "./components/PagesModal";
-import { captureCoords } from "./coords";
+import { captureCoords, coordsFromPoint } from "./coords";
 import { buildExportText } from "./exportText";
 import { clearIdentity, loadIdentity, saveIdentity } from "./identity";
 import { onNavigate } from "./navigation";
-import type { Comment, Draft, FeedbackConfig, Identity } from "./types";
+import type { Comment, Draft, FeedbackConfig, Identity, SelectionSnapshot } from "./types";
 
 type Mode = "idle" | "pick-component" | "pick-position";
 
@@ -43,6 +44,7 @@ export function App({ config }: { config: FeedbackConfig }) {
   const [toast, setToast] = useState<string | null>(null);
   const [manualCopyText, setManualCopyText] = useState<string | null>(null);
   const [highlightId, setHighlightId] = useState<string | null>(null);
+  const [selectionSnap, setSelectionSnap] = useState<SelectionSnapshot | null>(null);
   const [tick, setTick] = useState(0);
 
   const showToast = useCallback((message: string) => setToast(message), []);
@@ -56,6 +58,7 @@ export function App({ config }: { config: FeedbackConfig }) {
         setDraft(null);
         setMenuOpen(false);
         setHighlightId(null);
+        setSelectionSnap(null);
       }),
     [],
   );
@@ -95,6 +98,31 @@ export function App({ config }: { config: FeedbackConfig }) {
       window.removeEventListener("resize", bump);
       cancelAnimationFrame(frame);
     };
+  }, []);
+
+  // --- track the latest text selection for "Add copy comment" ---
+  // The snapshot survives the selection collapsing (clicking the pencil tends
+  // to clear it), so the menu can still offer the last highlighted text.
+  useEffect(() => {
+    const onSelectionChange = () => {
+      const selection = document.getSelection();
+      if (!selection || selection.isCollapsed || selection.rangeCount === 0) return; // keep the last snapshot
+      const text = selection.toString().trim().slice(0, 500);
+      if (!text) return;
+      const range = selection.getRangeAt(0);
+      const container = range.commonAncestorContainer;
+      const el = container instanceof Element ? container : container.parentElement;
+      if (isInsideFeedbackUi(el)) return;
+      const rect = range.getBoundingClientRect();
+      const nearest = findNearestComponentForHint(el);
+      setSelectionSnap({
+        text,
+        coords: coordsFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2),
+        component: nearest ? describeComponent(nearest) : null,
+      });
+    };
+    document.addEventListener("selectionchange", onSelectionChange);
+    return () => document.removeEventListener("selectionchange", onSelectionChange);
   }, []);
 
   // --- toast auto-dismiss ---
@@ -138,7 +166,12 @@ export function App({ config }: { config: FeedbackConfig }) {
           showToast("No tagged component here — click a highlighted element.");
           return;
         }
-        setDraft({ type: "component", coords: captureCoords(event), component: describeComponent(el) });
+        setDraft({
+          type: "component",
+          coords: captureCoords(event),
+          component: describeComponent(el),
+          selectionText: null,
+        });
       } else {
         // Best-effort guess: if the click landed inside a tagged component,
         // record it as a hint (the comment stays position-anchored).
@@ -147,6 +180,7 @@ export function App({ config }: { config: FeedbackConfig }) {
           type: "page-position",
           coords: captureCoords(event),
           component: nearest ? describeComponent(nearest) : null,
+          selectionText: null,
         });
       }
       setMode("idle");
@@ -174,6 +208,8 @@ export function App({ config }: { config: FeedbackConfig }) {
     for (const comment of comments) {
       if (comment.type === "component") {
         map.set(comment.id, !!findComponentElement(comment.componentTag));
+      } else if (comment.type === "copy") {
+        map.set(comment.id, !!findTextRect(comment.textSnippet));
       }
     }
     return map;
@@ -222,6 +258,9 @@ export function App({ config }: { config: FeedbackConfig }) {
       authorEmail: identity.email,
       ...(draft.coords ?? {}),
       ...(draft.component ?? {}),
+      // For copy comments the snippet is the highlighted text itself,
+      // overriding the picked component's element text.
+      ...(draft.selectionText ? { textSnippet: draft.selectionText } : {}),
     });
     setComments((prev) => [...prev, created]);
     setDraft(null);
@@ -304,6 +343,7 @@ export function App({ config }: { config: FeedbackConfig }) {
         type="button"
         className={panelOpen ? "dfb-fab dfb-fab--shifted" : "dfb-fab"}
         title="Design feedback"
+        onMouseDown={(e) => e.preventDefault() /* keep any text selection visible */}
         onClick={() => requireIdentity(() => setMenuOpen((open) => !open))}
       >
         <PencilIcon />
@@ -311,7 +351,8 @@ export function App({ config }: { config: FeedbackConfig }) {
       </button>
 
       {menuOpen && (
-        <div className={panelOpen ? "dfb-menu dfb-menu--shifted" : "dfb-menu"}>
+        // biome-ignore lint/a11y/noStaticElementInteractions: mousedown is only prevented to keep the text selection visible
+        <div className={panelOpen ? "dfb-menu dfb-menu--shifted" : "dfb-menu"} onMouseDown={(e) => e.preventDefault()}>
           <div className="dfb-menu-header">Add feedback</div>
           <button type="button" className="dfb-menu-item" onClick={() => startMode("pick-component")}>
             <span className="dfb-mi-icon">▣</span> Add component comment
@@ -324,10 +365,31 @@ export function App({ config }: { config: FeedbackConfig }) {
             className="dfb-menu-item"
             onClick={() => {
               setMenuOpen(false);
-              setDraft({ type: "page-general", coords: null, component: null });
+              setDraft({ type: "page-general", coords: null, component: null, selectionText: null });
             }}
           >
             <span className="dfb-mi-icon">▤</span> Add general page comment
+          </button>
+          <button
+            type="button"
+            className="dfb-menu-item"
+            disabled={!selectionSnap}
+            title={selectionSnap ? `“${selectionSnap.text.slice(0, 60)}”` : "Highlight some text on the page first"}
+            onClick={() => {
+              if (!selectionSnap) return;
+              setMenuOpen(false);
+              setDraft({
+                type: "copy",
+                coords: selectionSnap.coords,
+                component: selectionSnap.component,
+                selectionText: selectionSnap.text,
+              });
+            }}
+          >
+            <span className="dfb-mi-icon">❝</span> Add copy comment
+            <span className="dfb-mi-state">
+              {selectionSnap ? `“${truncate(selectionSnap.text, 14)}”` : "select text"}
+            </span>
           </button>
           <div className="dfb-menu-sep" />
           <button
@@ -497,6 +559,10 @@ export function App({ config }: { config: FeedbackConfig }) {
       {toast && <div className="dfb-toast">{toast}</div>}
     </>
   );
+}
+
+function truncate(text: string, max: number): string {
+  return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
 function PencilIcon() {

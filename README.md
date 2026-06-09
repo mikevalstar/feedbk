@@ -7,6 +7,7 @@ Reviewers open the app being reviewed, click a floating pencil button in the bot
 - attach a comment to a specific tagged component,
 - attach a comment to a clicked position on the page,
 - leave a general comment about the page,
+- comment on highlighted text ("copy comments"),
 - view, resolve, edit and delete comments left by others,
 - copy all of the current page's feedback to the clipboard as a structured prompt for an AI coding agent.
 

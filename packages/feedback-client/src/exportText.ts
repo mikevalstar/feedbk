@@ -13,6 +13,7 @@ export function buildExportText(
 ): string {
   const general = comments.filter((c) => c.type === "page-general");
   const positioned = comments.filter((c) => c.type === "page-position");
+  const copyComments = comments.filter((c) => c.type === "copy");
   const componentFound = comments.filter((c) => c.type === "component" && foundById.get(c.id));
   const componentMissing = comments.filter((c) => c.type === "component" && !foundById.get(c.id));
   const open = comments.filter((c) => c.status === "open").length;
@@ -41,6 +42,7 @@ export function buildExportText(
   const sections: Array<[title: string, items: Comment[], found: boolean | null]> = [
     ["General Page Comments", general, null],
     ["Page-Position Comments", positioned, null],
+    ["Copy Comments", copyComments, null],
     ["Component Comments - Found", componentFound, true],
     ["Component Comments - Missing", componentMissing, false],
   ];
@@ -52,7 +54,9 @@ export function buildExportText(
       continue;
     }
     for (const comment of items) {
-      lines.push("", ...commentBlock(comment, found));
+      // Copy comments carry per-comment found-ness (is the text still on the page?).
+      const commentFound = comment.type === "copy" ? (foundById.get(comment.id) ?? false) : found;
+      lines.push("", ...commentBlock(comment, commentFound));
     }
   }
 
@@ -85,6 +89,13 @@ function commentBlock(comment: Comment, found: boolean | null): string[] {
     if (comment.componentTag) lines.push(`Component Tag: ${comment.componentTag}`);
   }
 
+  if (comment.type === "copy") {
+    if (comment.textSnippet) lines.push(`Selected Text: "${comment.textSnippet}"`);
+    if (comment.componentName) lines.push(`Nearest Component: ${comment.componentName}`);
+    if (comment.componentTag) lines.push(`Component Tag: ${comment.componentTag}`);
+    lines.push(`Text Found: ${found ? "yes" : "no"}`);
+  }
+
   if (comment.clientX != null && comment.clientY != null) {
     lines.push("Position:", `- clientX/clientY: ${comment.clientX}, ${comment.clientY}`);
     if (comment.normalizedX != null && comment.normalizedY != null) {
@@ -92,8 +103,11 @@ function commentBlock(comment: Comment, found: boolean | null): string[] {
     }
   }
 
-  if (found === false) {
+  if (comment.type === "component" && found === false) {
     lines.push("", "Note:", "The original component was not found on the page when this export was generated.");
+  }
+  if (comment.type === "copy" && found === false) {
+    lines.push("", "Note:", "The selected text was not found on the page when this export was generated.");
   }
 
   lines.push("", "Feedback:", comment.body);

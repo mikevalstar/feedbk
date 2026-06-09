@@ -91,6 +91,7 @@ export const css = `
   background: #4f46e5; padding: 0;
 }
 .dfb-marker--page-position { background: #0d9488; }
+.dfb-marker--copy { background: #c026d3; }
 .dfb-marker--fallback { opacity: 0.75; border-style: dashed; }
 .dfb-marker--resolved { background: #9aa0b4; }
 .dfb-marker:hover { transform: translate(-50%, -50%) scale(1.15); }
@@ -132,6 +133,7 @@ export const css = `
 }
 .dfb-comment-num--page-position { background: #0d9488; }
 .dfb-comment-num--page-general { background: #b45309; border-radius: 50%; }
+.dfb-comment-num--copy { background: #c026d3; }
 .dfb-comment-meta { font-size: 12px; color: #6b7186; flex: 1; min-width: 0; }
 .dfb-comment-meta .dfb-author { color: #1f2430; font-weight: 600; }
 .dfb-chip {
@@ -190,6 +192,13 @@ export const css = `
 }
 .dfb-context code { background: #e8eaf2; border-radius: 4px; padding: 1px 5px; font-size: 11px; }
 .dfb-error { color: #b91c1c; font-size: 12px; margin-top: 8px; }
+.dfb-quote {
+  margin: 0 0 6px; padding: 4px 10px; border-left: 3px solid #c026d3;
+  background: #fdf4ff; border-radius: 0 6px 6px 0; font-style: italic;
+  color: #3a4154; word-wrap: break-word;
+}
+.dfb-menu-item:disabled { opacity: 0.45; cursor: not-allowed; }
+.dfb-menu-item:disabled:hover { background: none; }
 
 /* ---- pages modal ---- */
 .dfb-modal--wide { width: 580px; }

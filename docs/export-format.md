@@ -7,9 +7,10 @@ Produced by `packages/feedback-client/src/exportText.ts` via the "Copy Feedback 
 1. Instruction preamble for the coding agent.
 2. Project / page / URL / export timestamp.
 3. Summary counts (total / open / resolved).
-4. Four groups, each omitted-with-a-note when empty:
+4. Five groups, each omitted-with-a-note when empty:
    - General Page Comments
    - Page-Position Comments
+   - Copy Comments (feedback on highlighted text; includes `Selected Text:` and `Text Found:` lines, plus a note when the text is no longer on the page)
    - Component Comments - Found (component currently present in the DOM)
    - Component Comments - Missing (component not found at export time)
 

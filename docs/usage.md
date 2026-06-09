@@ -22,6 +22,7 @@ The floating pencil button sits in the bottom-right corner. Clicking it opens a 
 | Add component comment       | Enter component-pick mode: tagged components highlight on hover; click one to open the comment form |
 | Add page-position comment   | Enter position-pick mode: click anywhere on the page to drop a comment there |
 | Add general page comment    | Opens the comment form immediately; the comment attaches to the page as a whole |
+| Add copy comment            | Enabled when you've highlighted text on the page — comments on that exact copy (the selected text is stored and quoted) |
 | View page comments          | Opens the comments panel for the current page                            |
 | All pages with comments     | Popover listing every page in the project that has feedback, with open/resolved counts and links to jump there |
 | Toggle markers              | Show/hide the on-page comment pins                                       |
@@ -36,6 +37,7 @@ Press `Esc` at any time to leave a pick mode.
 - **Component comment** — anchored to a component tagged by `vite-plugin-component-tagger` (anything carrying a `data-ref` attribute). Stores component metadata *and* coordinates as a fallback.
 - **Page-position comment** — anchored to a clicked point on the page. Stores coordinates; if the click landed inside a tagged component, that component is also recorded as a "nearest component" hint (shown in the panel and the AI export, but the comment stays position-anchored).
 - **General page comment** — anchored to the page itself. No component, no coordinates.
+- **Copy comment** — anchored to highlighted text. Select some text, open the pencil menu, choose "Add copy comment". The selected text is stored (plus its position and nearest-component hint) and quoted in the panel and AI export. Markers re-anchor to wherever the text currently is; if the text disappears, the comment stays listed with a "Selected text not currently found" notice.
 
 All comments store: project key, page path (`location.pathname`), full URL, body, author name/email, status (`open`/`resolved`), and created/updated timestamps.
 

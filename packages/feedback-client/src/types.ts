@@ -1,4 +1,4 @@
-export type CommentType = "component" | "page-position" | "page-general";
+export type CommentType = "component" | "page-position" | "page-general" | "copy";
 export type CommentStatus = "open" | "resolved";
 
 export type FeedbackConfig = {
@@ -88,5 +88,14 @@ export type NewCommentPayload = {
 export type Draft = {
   type: CommentType;
   coords: CoordinateData | null;
+  component: ComponentTarget | null;
+  /** Copy comments: the highlighted text being commented on. */
+  selectionText: string | null;
+};
+
+/** Snapshot of the user's latest text selection, kept for "Add copy comment". */
+export type SelectionSnapshot = {
+  text: string;
+  coords: CoordinateData;
   component: ComponentTarget | null;
 };

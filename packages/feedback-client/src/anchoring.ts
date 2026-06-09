@@ -73,6 +73,32 @@ export function findNearestComponentForHint(el: Element | null): Element | null 
   return coverage <= 0.5 ? tagged : null;
 }
 
+/**
+ * Locate stored selection text in the live page (for copy-comment markers).
+ * Searches text nodes for the first line of the snippet; selections spanning
+ * several elements still match on their first text node. Returns the rect of
+ * the match, or null when the text is gone.
+ */
+export function findTextRect(snippet: string | null): DOMRect | null {
+  if (!snippet) return null;
+  const needle = (snippet.split("\n")[0] ?? "").trim().slice(0, 80);
+  if (needle.length < 3) return null;
+
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    const node = walker.currentNode as Text;
+    if (isInsideFeedbackUi(node.parentElement)) continue;
+    const index = (node.textContent ?? "").indexOf(needle);
+    if (index < 0) continue;
+    const range = document.createRange();
+    range.setStart(node, index);
+    range.setEnd(node, Math.min(index + needle.length, node.length));
+    const rect = range.getBoundingClientRect();
+    if (rect.width > 0 || rect.height > 0) return rect;
+  }
+  return null;
+}
+
 export function buildDomPath(el: Element): string {
   const parts: string[] = [];
   let current: Element | null = el;

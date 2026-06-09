@@ -1,6 +1,6 @@
 import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const COMMENT_TYPES = ["component", "page-position", "page-general"] as const;
+export const COMMENT_TYPES = ["component", "page-position", "page-general", "copy"] as const;
 export const COMMENT_STATUSES = ["open", "resolved"] as const;
 
 export type CommentType = (typeof COMMENT_TYPES)[number];

@@ -10,7 +10,7 @@ Base URL (dev): `http://localhost:4000`
 ## Comment object
 
 ```ts
-type CommentType = "component" | "page-position" | "page-general";
+type CommentType = "component" | "page-position" | "page-general" | "copy";
 type CommentStatus = "open" | "resolved";
 
 type Comment = {
@@ -30,7 +30,8 @@ type Comment = {
   componentTag: string | null;      // data-ref value, e.g. "src/components/BookCard.tsx#L12-14"
   componentMetadata: string | null; // JSON text for anything extra
   domPath: string | null;           // CSS-ish path captured at creation
-  textSnippet: string | null;       // first ~120 chars of the element's text
+  textSnippet: string | null;       // component comments: first ~120 chars of the
+                                    // element's text; copy comments: the highlighted text itself
 
   // Coordinates (component and page-position comments; null for page-general)
   viewportWidth: number | null;

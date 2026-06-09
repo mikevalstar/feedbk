@@ -12,6 +12,7 @@ const TITLES: Record<Draft["type"], string> = {
   component: "Comment on component",
   "page-position": "Comment on page position",
   "page-general": "Comment on this page",
+  copy: "Comment on selected text",
 };
 
 export function CommentForm({ draft, identity, onSubmit, onCancel }: Props) {
@@ -68,6 +69,19 @@ export function CommentForm({ draft, identity, onSubmit, onCancel }: Props) {
           </div>
         )}
         {draft.type === "page-general" && <div className="dfb-context">This comment applies to the whole page.</div>}
+        {draft.type === "copy" && draft.selectionText && (
+          <div className="dfb-context">
+            <blockquote className="dfb-quote">
+              {draft.selectionText.slice(0, 240)}
+              {draft.selectionText.length > 240 ? "…" : ""}
+            </blockquote>
+            {draft.component && (
+              <>
+                Near component: <strong>{draft.component.componentName}</strong>
+              </>
+            )}
+          </div>
+        )}
 
         <div className="dfb-field">
           <label htmlFor="dfb-comment-body">Feedback</label>
