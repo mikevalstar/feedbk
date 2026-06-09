@@ -1,0 +1,30 @@
+CREATE TABLE `comments` (
+	`id` text PRIMARY KEY NOT NULL,
+	`project_key` text NOT NULL,
+	`page_path` text NOT NULL,
+	`url` text NOT NULL,
+	`type` text NOT NULL,
+	`body` text NOT NULL,
+	`author_name` text NOT NULL,
+	`author_email` text NOT NULL,
+	`component_name` text,
+	`component_tag` text,
+	`component_metadata` text,
+	`dom_path` text,
+	`text_snippet` text,
+	`viewport_width` integer,
+	`viewport_height` integer,
+	`scroll_x` real,
+	`scroll_y` real,
+	`client_x` real,
+	`client_y` real,
+	`page_x` real,
+	`page_y` real,
+	`normalized_x` real,
+	`normalized_y` real,
+	`status` text DEFAULT 'open' NOT NULL,
+	`created_at` text NOT NULL,
+	`updated_at` text NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `idx_comments_project_page` ON `comments` (`project_key`,`page_path`);

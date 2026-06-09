@@ -1,0 +1,23 @@
+{
+  "name": "design-feedback-monorepo",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter \"./packages/*\" run build && pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "typecheck": "pnpm -r run typecheck",
+    "db:generate": "pnpm --filter @repo/backend run db:generate",
+    "db:migrate": "pnpm --filter @repo/backend run db:migrate"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
