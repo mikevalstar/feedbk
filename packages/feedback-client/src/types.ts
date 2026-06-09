@@ -44,6 +44,15 @@ export type Comment = {
   updatedAt: string;
 };
 
+/** One row of the "All pages with comments" view (GET /api/projects/:key/pages). */
+export type PageSummary = {
+  pagePath: string;
+  total: number;
+  open: number;
+  resolved: number;
+  lastUpdatedAt: string;
+};
+
 export type CoordinateData = {
   viewportWidth: number;
   viewportHeight: number;

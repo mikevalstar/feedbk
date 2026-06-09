@@ -191,6 +191,26 @@ export const css = `
 .dfb-context code { background: #e8eaf2; border-radius: 4px; padding: 1px 5px; font-size: 11px; }
 .dfb-error { color: #b91c1c; font-size: 12px; margin-top: 8px; }
 
+/* ---- pages modal ---- */
+.dfb-modal--wide { width: 580px; }
+.dfb-pages-list { list-style: none; margin: 0; padding: 0; max-height: 56vh; overflow-y: auto; }
+.dfb-page-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  border: 1px solid #e6e8ef; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
+  text-decoration: none; color: #1f2430; background: #fff;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.dfb-page-row:hover { border-color: #4f46e5; background: #f7f7ff; }
+.dfb-page-row--current { background: #eef0ff; border-color: #c7cafc; }
+.dfb-page-path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px; font-weight: 600; flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dfb-page-counts { font-size: 12px; color: #6b7186; white-space: nowrap; }
+.dfb-page-go { font-size: 12px; font-weight: 600; color: #4f46e5; white-space: nowrap; }
+.dfb-page-row--current .dfb-page-go { color: #6b7186; }
+
 /* ---- toast ---- */
 .dfb-toast {
   position: fixed; bottom: 86px; left: 50%; transform: translateX(-50%);

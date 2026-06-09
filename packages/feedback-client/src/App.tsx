@@ -5,6 +5,7 @@ import { CommentForm } from "./components/CommentForm";
 import { CommentsPanel } from "./components/CommentsPanel";
 import { IdentityModal } from "./components/IdentityModal";
 import { Markers } from "./components/Markers";
+import { PagesModal } from "./components/PagesModal";
 import { captureCoords } from "./coords";
 import { buildExportText } from "./exportText";
 import { clearIdentity, loadIdentity, saveIdentity } from "./identity";
@@ -30,6 +31,7 @@ export function App({ config }: { config: FeedbackConfig }) {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [pagesOpen, setPagesOpen] = useState(false);
   const [showMarkers, setShowMarkers] = useState(true);
   const [showResolved, setShowResolved] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -326,6 +328,16 @@ export function App({ config }: { config: FeedbackConfig }) {
             <span className="dfb-mi-icon">☰</span> View page comments
             <span className="dfb-mi-state">{comments.length}</span>
           </button>
+          <button
+            type="button"
+            className="dfb-menu-item"
+            onClick={() => {
+              setMenuOpen(false);
+              setPagesOpen(true);
+            }}
+          >
+            <span className="dfb-mi-icon">▦</span> All pages with comments
+          </button>
           <button type="button" className="dfb-menu-item" onClick={() => setShowMarkers((v) => !v)}>
             <span className="dfb-mi-icon">◉</span> Toggle markers
             <span className="dfb-mi-state">{showMarkers ? "on" : "off"}</span>
@@ -422,6 +434,7 @@ export function App({ config }: { config: FeedbackConfig }) {
       )}
 
       {/* modals */}
+      {pagesOpen && <PagesModal config={config} currentPath={pagePath} onClose={() => setPagesOpen(false)} />}
       {identityOpen && (
         <IdentityModal
           initial={identity}

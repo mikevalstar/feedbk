@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatTime } from "../format";
 import type { Comment } from "../types";
 
 type Props = {
@@ -196,10 +197,4 @@ function CommentCard({ comment, missing, ...props }: Props & { comment: Comment;
       </div>
     </div>
   );
-}
-
-function formatTime(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }

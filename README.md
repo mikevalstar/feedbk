@@ -142,6 +142,7 @@ Backend base URL: `http://localhost:4000`. CORS is fully permissive.
 
 ```txt
 GET    /health
+GET    /api/projects/:projectKey/pages
 GET    /api/projects/:projectKey/comments?pagePath=/some/path
 GET    /api/projects/:projectKey/comments?includeAllPages=true
 POST   /api/projects/:projectKey/comments

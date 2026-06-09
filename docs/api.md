@@ -58,6 +58,28 @@ There are no screenshot fields in phase 1; the schema can be extended later.
 { "ok": true }
 ```
 
+### `GET /api/projects/:projectKey/pages`
+
+Per-page comment counts for the project — powers the client's "All pages with comments" view.
+
+Response `200`:
+
+```json
+{
+  "pages": [
+    {
+      "pagePath": "/books",
+      "total": 4,
+      "open": 3,
+      "resolved": 1,
+      "lastUpdatedAt": "2026-06-09T15:30:00.000Z"
+    }
+  ]
+}
+```
+
+Pages are ordered by `pagePath` ascending; pages with no comments are not listed.
+
 ### `GET /api/projects/:projectKey/comments`
 
 Query parameters:

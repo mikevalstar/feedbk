@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { serve } from "@hono/node-server";
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { db, runMigrations } from "./db.js";
@@ -21,6 +21,24 @@ app.use(
 );
 
 app.get("/health", (c) => c.json({ ok: true }));
+
+// Per-page comment counts for the project — powers the "All pages with comments" view.
+app.get("/api/projects/:projectKey/pages", async (c) => {
+  const projectKey = c.req.param("projectKey");
+  const rows = await db
+    .select({
+      pagePath: comments.pagePath,
+      total: sql<number>`count(*)`,
+      open: sql<number>`sum(case when ${comments.status} = 'open' then 1 else 0 end)`,
+      resolved: sql<number>`sum(case when ${comments.status} = 'resolved' then 1 else 0 end)`,
+      lastUpdatedAt: sql<string>`max(${comments.updatedAt})`,
+    })
+    .from(comments)
+    .where(eq(comments.projectKey, projectKey))
+    .groupBy(comments.pagePath)
+    .orderBy(asc(comments.pagePath));
+  return c.json({ pages: rows });
+});
 
 app.get("/api/projects/:projectKey/comments", async (c) => {
   const projectKey = c.req.param("projectKey");

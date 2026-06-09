@@ -1,4 +1,4 @@
-import type { Comment, FeedbackConfig, NewCommentPayload } from "./types";
+import type { Comment, FeedbackConfig, NewCommentPayload, PageSummary } from "./types";
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, {
@@ -18,8 +18,17 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
+function projectBase(config: FeedbackConfig): string {
+  return `${config.apiUrl.replace(/\/$/, "")}/api/projects/${encodeURIComponent(config.projectKey)}`;
+}
+
 function base(config: FeedbackConfig): string {
-  return `${config.apiUrl.replace(/\/$/, "")}/api/projects/${encodeURIComponent(config.projectKey)}/comments`;
+  return `${projectBase(config)}/comments`;
+}
+
+export async function listPages(config: FeedbackConfig): Promise<PageSummary[]> {
+  const data = await request<{ pages: PageSummary[] }>(`${projectBase(config)}/pages`);
+  return data.pages;
 }
 
 export async function listComments(config: FeedbackConfig, pagePath: string): Promise<Comment[]> {

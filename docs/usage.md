@@ -23,6 +23,7 @@ The floating pencil button sits in the bottom-right corner. Clicking it opens a 
 | Add page-position comment   | Enter position-pick mode: click anywhere on the page to drop a comment there |
 | Add general page comment    | Opens the comment form immediately; the comment attaches to the page as a whole |
 | View page comments          | Opens the comments panel for the current page                            |
+| All pages with comments     | Popover listing every page in the project that has feedback, with open/resolved counts and links to jump there |
 | Toggle markers              | Show/hide the on-page comment pins                                       |
 | Show/hide resolved          | Include or exclude resolved comments in markers and the panel            |
 | Copy Feedback for AI Agent  | Copies the current page's feedback as a structured AI prompt             |
