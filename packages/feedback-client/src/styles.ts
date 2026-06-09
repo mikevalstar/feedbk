@@ -52,6 +52,13 @@ export const css = `
 .dfb-menu-item:hover { background: #eef0ff; }
 .dfb-menu-item .dfb-mi-icon { width: 17px; text-align: center; flex: none; }
 .dfb-menu-item .dfb-mi-state { margin-left: auto; color: #8a8fa3; font-size: 12px; }
+.dfb-menu-item--stacked { align-items: flex-start; }
+.dfb-menu-item--stacked .dfb-mi-icon { padding-top: 2px; }
+.dfb-mi-body { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.dfb-mi-snippet {
+  font-size: 11px; font-style: italic; color: #8a8fa3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .dfb-menu-sep { height: 1px; background: #edeef4; margin: 5px 8px; }
 
 /* ---- pick mode ---- */

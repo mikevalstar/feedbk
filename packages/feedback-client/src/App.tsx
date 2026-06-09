@@ -372,7 +372,7 @@ export function App({ config }: { config: FeedbackConfig }) {
           </button>
           <button
             type="button"
-            className="dfb-menu-item"
+            className="dfb-menu-item dfb-menu-item--stacked"
             disabled={!selectionSnap}
             title={selectionSnap ? `“${selectionSnap.text.slice(0, 60)}”` : "Highlight some text on the page first"}
             onClick={() => {
@@ -386,9 +386,12 @@ export function App({ config }: { config: FeedbackConfig }) {
               });
             }}
           >
-            <span className="dfb-mi-icon">❝</span> Add copy comment
-            <span className="dfb-mi-state">
-              {selectionSnap ? `“${truncate(selectionSnap.text, 14)}”` : "select text"}
+            <span className="dfb-mi-icon">❝</span>
+            <span className="dfb-mi-body">
+              <span>Add copy comment</span>
+              <span className="dfb-mi-snippet">
+                {selectionSnap ? `“${selectionSnap.text}”` : "Highlight text on the page first"}
+              </span>
             </span>
           </button>
           <div className="dfb-menu-sep" />
@@ -559,10 +562,6 @@ export function App({ config }: { config: FeedbackConfig }) {
       {toast && <div className="dfb-toast">{toast}</div>}
     </>
   );
-}
-
-function truncate(text: string, max: number): string {
-  return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
 function PencilIcon() {
