@@ -26,7 +26,7 @@
 `@repo/vite-plugin-design-feedback` returns an array of sub-plugins:
 
 1. **Guarded component tagger** (`enforce: 'pre'`)
-   - The *real* `vite-plugin-component-tagger` npm package, instantiated with `extensions: ['.tsx', '.jsx']` (its default is Svelte).
+   - The *real* `vite-plugin-component-tagger` npm package, instantiated with `extensions: ['.tsx', '.jsx']` (its default is Svelte) and `enableInProd: true` — the designFeedback `enabled` option is the single on/off switch, and built demos should be commentable too.
    - In its default `components` mode it adds `data-ref="<relative-path>#L<start>-<end>"` to the first lowercase root element of each component file.
    - The wrapper delegates `transform` to the tagger, then syntax-checks the result with esbuild (`loader: 'tsx'`). The tagger is regex-based; on TypeScript files it can corrupt code containing lowercase generics (`useState<boolean>`, `Record<string, T>`). If the check fails, the original code is returned untouched — that file's components simply aren't taggable and feedback falls back to coordinates.
    - Skips any module id containing `feedback-client` so the feedback UI is never instrumented.

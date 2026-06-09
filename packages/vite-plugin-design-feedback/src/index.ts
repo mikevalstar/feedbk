@@ -46,7 +46,9 @@ function readClientBundle(): string {
  * when the transform would break the module.
  */
 function createGuardedTagger(): Plugin {
-  const tagger = componentTagger({ extensions: [".tsx", ".jsx"] });
+  // enableInProd: the designFeedback `enabled` option is the single on/off
+  // switch; when the plugin is on, built demos should be commentable too.
+  const tagger = componentTagger({ extensions: [".tsx", ".jsx"], enableInProd: true });
   const taggerTransform = tagger.transform;
 
   return {
