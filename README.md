@@ -70,6 +70,39 @@ pnpm typecheck   # TypeScript checks across the workspace
 pnpm lint        # Biome (format + lint); pnpm lint:fix to auto-fix
 ```
 
+## Using it in your own Vite app
+
+These packages are not published to npm (and won't be any time soon) — they live in this monorepo as workspace packages, and the plugin injects a prebuilt bundle from `packages/feedback-client`. To add the feedback tool to an existing Vite + React app, install it straight from GitHub.
+
+> Requires a Vite + React app using `@vitejs/plugin-react`, and a running [feedback backend](#api-endpoints) it can reach. This is a prototype with no auth or production hardening — point it at internal/local apps only.
+
+1. **Install the plugin and its prebuilt client bundle from GitHub.** From your app's directory:
+
+   ```bash
+   pnpm add "github:mikevalstar/feedbk#path:/packages/vite-plugin-design-feedback" \
+            "github:mikevalstar/feedbk#path:/packages/feedback-client"
+   ```
+
+2. **Wire it into `vite.config.ts`** (see [Plugin configuration](#plugin-configuration) below for all options):
+
+   ```ts
+   import { defineConfig } from "vite";
+   import react from "@vitejs/plugin-react";
+   import designFeedback from "@repo/vite-plugin-design-feedback";
+
+   export default defineConfig({
+     plugins: [
+       designFeedback({
+         projectKey: "my-app",                // scopes comments to your app
+         apiUrl: "http://localhost:4000",     // wherever your backend runs
+       }),
+       react(),                               // designFeedback() must come first
+     ],
+   });
+   ```
+
+3. **Start your dev server.** A floating pencil button appears in the bottom-right corner; the first click prompts for a name/email and you can begin leaving comments.
+
 ## Plugin configuration
 
 ```ts
