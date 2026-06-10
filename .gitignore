@@ -1,5 +1,11 @@
 node_modules/
 dist/
+# Ship the publishable packages' prebuilt dist so they install straight from
+# GitHub with no build step (see packages/*/package.json "files").
+!packages/vite-plugin-design-feedback/dist/
+!packages/vite-plugin-design-feedback/dist/**
+!packages/feedback-client/dist/
+!packages/feedback-client/dist/**
 *.log
 .DS_Store
 apps/backend/data/

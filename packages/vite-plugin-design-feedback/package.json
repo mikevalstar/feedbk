@@ -15,7 +15,6 @@
   "scripts": {
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
     "build": "tsc -p tsconfig.json && node ./scripts/copy-client.mjs",
-    "prepare": "tsc -p tsconfig.json && node ./scripts/copy-client.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
