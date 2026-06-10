@@ -1,8 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { transform as esbuildTransform } from "esbuild";
-import componentTagger from "vite-plugin-component-tagger";
+import { parse } from "@babel/parser";
+import MagicString from "magic-string";
 const VIRTUAL_ID = "virtual:design-feedback-client";
 const RESOLVED_VIRTUAL_ID = `\0${VIRTUAL_ID}`;
 // How Vite encodes \0-prefixed ids in browser URLs.
@@ -29,55 +30,95 @@ function resolveClientBundlePath() {
 function readClientBundle() {
     return readFileSync(resolveClientBundlePath(), "utf8");
 }
+/** Strip Vite's query suffix (?v=, ?import, etc.) and return the on-disk path. */
+function cleanId(id) {
+    return id.split("?")[0] ?? id;
+}
+/** Walk a Babel AST, calling `visit` on every node. Intentionally tiny — no
+ * @babel/traverse, which has awkward ESM/CJS interop. */
+function walk(node, visit) {
+    if (!node || typeof node !== "object")
+        return;
+    const n = node;
+    if (typeof n.type !== "string")
+        return;
+    visit(n);
+    for (const key in n) {
+        if (key === "loc" || key === "start" || key === "end" || key === "range")
+            continue;
+        const child = n[key];
+        if (Array.isArray(child)) {
+            for (const c of child)
+                walk(c, visit);
+        }
+        else if (child && typeof child === "object") {
+            walk(child, visit);
+        }
+    }
+}
 /**
- * The real vite-plugin-component-tagger, configured for React files and
- * wrapped with a safety guard.
+ * AST-based component tagger.
  *
- * The tagger stamps each component's root element with
- * data-ref="src/components/X.tsx#L<start>-<end>" — the attribute the feedback
- * client uses to pick components and anchor comments.
+ * Stamps every JSX opening element with
+ *   data-ref="src/components/X.tsx#L<start>-<end>"
+ * — the attribute the feedback client uses to pick components and anchor
+ * comments (capitalized basename of the path = component name).
  *
- * The guard exists because the tagger is line/regex based (it was written for
- * Svelte): on TypeScript it can mistake lowercase generics (useState<boolean>,
- * Record<string, T>) for elements and corrupt the file. We therefore
- * syntax-check its output with esbuild and fall back to the untagged source
- * when the transform would break the module.
+ * This replaces the old regex/line-based `vite-plugin-component-tagger`, which
+ * was written for Svelte and mistook lowercase TypeScript generics
+ * (useState<boolean>, Record<string, T>) for JSX elements, corrupting files and
+ * forcing a coordinate-only fallback. A real parser never confuses generics
+ * with JSX, so tagging is reliable and nothing falls back. We inject by source
+ * position with magic-string (and emit a sourcemap) rather than regenerating
+ * the file, so formatting and line numbers are preserved for downstream plugins.
  */
-function createGuardedTagger() {
-    // enableInProd: the designFeedback `enabled` option is the single on/off
-    // switch; when the plugin is on, built demos should be commentable too.
-    const tagger = componentTagger({ extensions: [".tsx", ".jsx"], enableInProd: true });
-    const taggerTransform = tagger.transform;
+function createTagger() {
+    let root = process.cwd();
     return {
-        ...tagger,
         name: "design-feedback:component-tagger",
         // Must run before @vitejs/plugin-react so it sees raw JSX and true source line numbers.
         enforce: "pre",
-        async transform(code, id) {
-            // Never tag the feedback client itself (or any virtual module).
-            if (id.includes("feedback-client") || id.startsWith("\0"))
+        configResolved(config) {
+            root = config.root;
+        },
+        transform(code, rawId) {
+            const id = cleanId(rawId);
+            // Only React source files; never the feedback client or virtual modules.
+            if (!/\.[jt]sx$/.test(id))
                 return null;
-            const handler = typeof taggerTransform === "function" ? taggerTransform : taggerTransform?.handler;
-            if (!handler)
+            if (rawId.startsWith("\0") || id.includes("feedback-client") || id.includes("node_modules")) {
                 return null;
-            const result = await handler.call(this, code, id);
-            if (result == null)
-                return null;
-            const output = typeof result === "string" ? result : result.code;
-            if (output == null || output === code)
-                return null;
+            }
+            let ast;
             try {
-                await esbuildTransform(output, {
-                    loader: id.endsWith(".jsx") ? "jsx" : "tsx",
-                    jsx: "preserve",
+                ast = parse(code, {
+                    sourceType: "module",
+                    // Cover the common React + TS surface; unknown syntax just throws and
+                    // we skip the file (rare, and it still works via coordinate fallback).
+                    plugins: ["jsx", "typescript", "decorators-legacy", "importAttributes", "explicitResourceManagement"],
                 });
-                return result;
             }
             catch {
-                this.warn(`[design-feedback] vite-plugin-component-tagger produced invalid syntax for ${id}; ` +
-                    "leaving the file untagged (feedback falls back to coordinates).");
                 return null;
             }
+            const rel = relative(root, id).split("\\").join("/");
+            const s = new MagicString(code);
+            let tagged = 0;
+            walk(ast.program, (n) => {
+                if (n.type !== "JSXOpeningElement")
+                    return;
+                const name = n.name;
+                const loc = n.loc;
+                const nameEnd = name?.end;
+                if (typeof nameEnd !== "number" || !loc)
+                    return;
+                // Insert right after the tag name: <div| className> -> <div data-ref="…" className>
+                s.appendLeft(nameEnd, ` data-ref="${rel}#L${loc.start.line}-${loc.end.line}"`);
+                tagged++;
+            });
+            if (tagged === 0)
+                return null;
+            return { code: s.toString(), map: s.generateMap({ hires: true }) };
         },
     };
 }
@@ -167,5 +208,5 @@ export default function designFeedback(options) {
     if (options.enabled === false) {
         return []; // fully disabled: no tagging, no injected UI
     }
-    return [createGuardedTagger(), createInjector(options)];
+    return [createTagger(), createInjector(options)];
 }
