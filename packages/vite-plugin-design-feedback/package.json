@@ -14,12 +14,11 @@
   "files": ["dist"],
   "scripts": {
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-    "build": "tsc -p tsconfig.json",
-    "prepare": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node ./scripts/copy-client.mjs",
+    "prepare": "tsc -p tsconfig.json && node ./scripts/copy-client.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@repo/feedback-client": "workspace:*",
     "esbuild": "^0.25.5",
     "vite-plugin-component-tagger": "^0.2.6"
   },
@@ -27,6 +26,7 @@
     "vite": ">=5.0.0"
   },
   "devDependencies": {
+    "@repo/feedback-client": "workspace:*",
     "@types/node": "^22.15.29",
     "typescript": "^5.8.3",
     "vite": "^6.3.5"

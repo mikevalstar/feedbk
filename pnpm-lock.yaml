@@ -101,9 +101,6 @@ importers:
 
   packages/vite-plugin-design-feedback:
     dependencies:
-      '@repo/feedback-client':
-        specifier: workspace:*
-        version: link:../feedback-client
       esbuild:
         specifier: ^0.25.5
         version: 0.25.12
@@ -111,6 +108,9 @@ importers:
         specifier: ^0.2.6
         version: 0.2.6(vite@6.4.3(@types/node@22.19.20)(tsx@4.22.4))
     devDependencies:
+      '@repo/feedback-client':
+        specifier: workspace:*
+        version: link:../feedback-client
       '@types/node':
         specifier: ^22.15.29
         version: 22.19.20

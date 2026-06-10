@@ -1,5 +1,6 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 import { transform as esbuildTransform } from "esbuild";
 import type { HtmlTagDescriptor, Plugin, PluginOption } from "vite";
 import componentTagger from "vite-plugin-component-tagger";
@@ -16,13 +17,21 @@ const RESOLVED_VIRTUAL_ID = `\0${VIRTUAL_ID}`;
 const DEV_CLIENT_URL = `/@id/__x00__${VIRTUAL_ID}`;
 
 function resolveClientBundlePath(): string {
+  // Monorepo dev: resolve the live sibling workspace bundle, so the
+  // watch-build rebuild loop in configureServer keeps invalidating + reloading.
   const require = createRequire(import.meta.url);
   try {
     return require.resolve("@repo/feedback-client/bundle");
   } catch {
+    // Consumer install: @repo/feedback-client is NOT a runtime dependency.
+    // The plugin's build step (scripts/copy-client.mjs) copies the prebuilt
+    // IIFE next to this module, so the plugin ships fully self-contained.
+    const bundled = fileURLToPath(new URL("./feedback-client.iife.js", import.meta.url));
+    if (existsSync(bundled)) return bundled;
     throw new Error(
-      "[design-feedback] Could not resolve @repo/feedback-client/bundle. " +
-        "Build it first: pnpm --filter @repo/feedback-client build",
+      "[design-feedback] Could not resolve the feedback client bundle. " +
+        "Expected a sibling @repo/feedback-client (monorepo dev) or a bundled " +
+        "feedback-client.iife.js next to the plugin (published/git build).",
     );
   }
 }
